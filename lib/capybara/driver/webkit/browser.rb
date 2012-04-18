@@ -171,13 +171,16 @@ class Capybara::Driver::Webkit
     def server_pipe_and_pid(server_path)
       cmdline = [server_path]
       cmdline << "--ignore-ssl-errors" if @ignore_ssl_errors
+      cmdline << "2>&1"
       pipe = IO.popen(cmdline.join(" "))
       [pipe, pipe.pid]
     end
 
     def discover_server_port(read_pipe)
       return unless IO.select([read_pipe], nil, nil, 10)
-      ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1].to_i
+      message = (read_pipe.first || '')
+      raise "Exiting early: #{pipe.first}" if message.include?("cannot connect to X server")
+      (message.match(/listening on port: (\d+)/) || [])[1].to_i
     end
 
     def forward_stdout(pipe)
