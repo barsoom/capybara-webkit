@@ -179,7 +179,7 @@ class Capybara::Driver::Webkit
     def discover_server_port(read_pipe)
       return unless IO.select([read_pipe], nil, nil, 10)
       message = (read_pipe.first || '')
-      raise "Exiting early: #{pipe.first}" if message.include?("cannot connect to X server")
+      raise "Exiting early: #{message}" if message.include?("cannot connect to X server")
       (message.match(/listening on port: (\d+)/) || [])[1].to_i
     end
 
